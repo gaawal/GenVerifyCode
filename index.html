@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态口令生成器</title>
+</head>
+<body>
+    <h1>动态口令生成器</h1>
+    <label for="account">请输入账号：</label>
+    <input type="text" id="account" placeholder="例如: user123">
+    <button onclick="generatePassword()">生成口令</button>
+
+    <p id="result"></p>
+
+    <script>
+        function generatePassword() {
+            const account = document.getElementById('account').value;
+            if (!account) {
+                alert("请输入账号！");
+                return;
+            }
+
+            const secretKey = "my_secret_key"; // 固定密钥
+            const timestamp = Math.floor(Date.now() / 1000); // 当前时间戳（秒）
+            const timeSegment = Math.floor(timestamp / 300); // 每5分钟一个时间段
+
+            // 拼接账号和时间段
+            const data = `${account}-${timeSegment}`;
+
+            // 使用简单哈希算法生成动态口令
+            const hash = CryptoJS.HmacSHA256(data, secretKey).toString();
+            const password = hash.slice(0, 6); // 截取前6位
+
+            // 显示结果
+            document.getElementById('result').innerText = `动态口令: ${password}`;
+        }
+    </script>
+
+    <!-- 引入 CryptoJS 用于哈希加密 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+</body>
+</html>
